@@ -1,4 +1,3 @@
-<!-- login.html -->
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -11,16 +10,16 @@
   <button id="loginButton">ログイン</button>
 
   <script>
-    // CognitoのホストされたUIへのリダイレクトURL
-    const cognitoDomain = "https://ap-northeast-1heoldjtvz.auth.ap-northeast-1.amazoncognito.com";  // Cognitoドメイン
-    const region = "ap-northeast-1";  // AWSリージョン（例: us-west-2）
-    const clientId = "ap-northeast-1_HEoLDjtVz";  // CognitoアプリクライアントID
-    const redirectUri = "https://brave-flower-0e0f8a700.6.azurestaticapps.net/index.html";  // ログイン後にリダイレクトされるURL
+    // 必要な情報
+    const cognitoDomain = "ap-northeast-1heoldjtvz";  // ドメイン前半部（https:// は不要）
+    const region = "ap-northeast-1";
+    const clientId = "c5p5q2vphhcro2len18dm4guq";  // ←実際のクライアントIDを記入
+    const redirectUri = "https://brave-flower-0e0f8a700.6.azurestaticapps.net/index.html";
 
-    // CognitoのホストUIへのリダイレクトリンクを作成
-    const loginUrl = `https://ap-northeast-1heoldjtvz.auth.ap-northeast-1.amazoncognito.com/login?response_type=code&client_id=${c5p5q2vphhcro2len18dm4guq}&redirect_uri=${https://brave-flower-0e0f8a700.6.azurestaticapps.net/index.html}`;
+    // ログインURLを構築（全て文字列変数で）
+    const loginUrl = `https://${cognitoDomain}.auth.${region}.amazoncognito.com/login?response_type=code&client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}`;
 
-    // ログインボタンがクリックされた時にCognitoのログインページにリダイレクト
+    // ボタン押下時にリダイレクト
     document.getElementById('loginButton').addEventListener('click', () => {
       window.location.href = loginUrl;
     });
