@@ -1,9 +1,33 @@
+<!-- index.html -->
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>Static Web App Test</title>
-  </head>
-  <body>
-    <h1>Hello from Azure Static Web App!</h1>
-  </body>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>ホーム</title>
+</head>
+<body>
+  <script>
+    const token = localStorage.getItem("idToken");
+    const username = localStorage.getItem("username");
+
+    if (!token) {
+      // 未ログインならログインページへ
+      window.location.href = "login.html";
+    }
+  </script>
+
+  <h1>ようこそ</h1>
+  <p id="welcomeMessage"></p>
+  <button onclick="logout()">ログアウト</button>
+
+  <script>
+    document.getElementById("welcomeMessage").innerText = `${username} さん、こんにちは！`;
+
+    function logout() {
+      localStorage.removeItem("idToken");
+      localStorage.removeItem("username");
+      window.location.href = "login.html";
+    }
+  </script>
+</body>
 </html>
