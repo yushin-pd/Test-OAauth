@@ -1,0 +1,54 @@
+<!-- callback.html -->
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ログイン成功</title>
+</head>
+<body>
+  <h1>ログイン成功</h1>
+  <p id="status"></p>
+
+  <script>
+    // URLから認証コードを取得
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get('code');
+
+    if (code) {
+      // 認証コードを使ってアクセストークンを取得する
+      const clientId = "c5p5q2vphhcro2len18dm4guq";
+      const clientSecret = "1c4gotgvsks54ujckjti6j5gs6dqrqukfj684i16a9ocvpv8aqao";  // 必要な場合
+      const redirectUri = "https://brave-flower-0e0f8a700.6.azurestaticapps.net";
+      const cognitoDomain = "https://ap-northeast-1heoldjtvz.auth.ap-northeast-1.amazoncognito.com";  // Cognitoのドメイン
+      const region = "ap-northeast-1";  // AWSリージョン
+
+      fetch(`https://${cognitoDomain}.auth.${region}.amazoncognito.com/oauth2/token`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({
+          grant_type: 'authorization_code',
+          code: code,
+          redirect_uri: redirectUri,
+          client_id: clientId,
+          client_secret: clientSecret,  // 必要な場合
+        }),
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log('アクセストークン:', data.access_token);
+        console.log('IDトークン:', data.id_token);
+        document.getElementById('status').innerText = 'ログイン成功しました!';
+      })
+      .catch(error => {
+        console.error('エラー:', error);
+        document.getElementById('status').innerText = 'ログインに失敗しました。';
+      });
+    } else {
+      document.getElementById('status').innerText = '認証コードが見つかりませんでした。';
+    }
+  </script>
+</body>
+</html>
