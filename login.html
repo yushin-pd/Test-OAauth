@@ -6,7 +6,7 @@
   <title>ログイン</title>
 </head>
 <body>
-  <h1>ログインフォーム</h1>
+  <h1>ログイン</h1>
   <form id="loginForm">
     <input type="text" id="username" placeholder="ユーザー名" required><br>
     <input type="password" id="password" placeholder="パスワード" required><br>
@@ -22,7 +22,7 @@
     } from 'https://cdn.jsdelivr.net/npm/amazon-cognito-identity-js/+esm';
 
     const poolData = {
-      UserPoolId: 'ap-northeast-1_HEoLDjtVz',
+      UserPoolId: 'ap-northeast-1_HEoLDjtVz', 
       ClientId: 'c5p5q2vphhcro2len18dm4guq'
     };
 
@@ -30,6 +30,7 @@
 
     document.getElementById('loginForm').addEventListener('submit', function (e) {
       e.preventDefault();
+
       const username = document.getElementById('username').value;
       const password = document.getElementById('password').value;
 
@@ -39,11 +40,12 @@
       user.authenticateUser(authDetails, {
         onSuccess: (result) => {
           const idToken = result.getIdToken().getJwtToken();
-          document.getElementById('message').innerText = 'ログイン成功！IDトークンはコンソールで確認できます';
-          console.log('ログイン成功！IDトークン:', idToken);
+          localStorage.setItem("idToken", idToken);
+          localStorage.setItem("username", username);  // ユーザー名も保存
+          window.location.href = "index.html";
         },
         onFailure: (err) => {
-          document.getElementById('message').innerText = 'ログイン失敗: ' + err.message;
+          document.getElementById('message').innerText = "ログイン失敗: " + err.message;
         }
       });
     });
