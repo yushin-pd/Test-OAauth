@@ -2,26 +2,28 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>ホーム</title>
 </head>
 <body>
   <h1>ようこそ</h1>
-  <p id="welcomeMessage">読み込み中...</p>
-  <button onclick="logout()">ログアウト</button>
+  <p id="welcomeMessage">認証確認中…</p>
+  <button id="logoutButton" style="display:none;">ログアウト</button>
 
   <script>
-    const cognitoDomain = "https://ap-northeast-1heoldjtvz.auth.ap-northeast-1.amazoncognito.com";
-    const clientId = "1i0hpmdjda1mdm7ibq9cvj54cv";
-    const redirectUri = "https://brave-flower-0e0f8a700.6.azurestaticapps.net/index.html";
+    // Cognito OIDC 情報
+    const cognitoDomain = "ap-northeast-1heoldjtvz"; // Cognitoドメインプレフィックス
+    const region = "ap-northeast-1";
+    const clientId = "1i0hpmdjda1mdm7ibq9cvj54cv"; // アプリクライアントID
+    const redirectUri = https://brave-flower-0e0f8a700.6.azurestaticapps.net/index.html; // /index.html
 
-    // URLから code を取得
-    const urlParams = new URLSearchParams(window.location.search);
-    const code = urlParams.get("code");
+    // URL から code を取得
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get("code");
 
     async function exchangeCodeForToken(code) {
-      const tokenUrl = `https://${cognitoDomain}/oauth2/token`;
-
+      const tokenUrl = `https://${cognitoDomain}.auth.${region}.amazoncognito.com/oauth2/token`;
       const body = new URLSearchParams({
         grant_type: "authorization_code",
         client_id: clientId,
@@ -30,54 +32,60 @@
       });
 
       try {
-        const response = await fetch(tokenUrl, {
+        const res = await fetch(tokenUrl, {
           method: "POST",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-          },
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
           body: body.toString()
         });
-
-        const data = await response.json();
-
+        const data = await res.json();
         if (data.id_token) {
           localStorage.setItem("idToken", data.id_token);
-          // 必要なら username をデコードして取得
-          const payload = JSON.parse(atob(data.id_token.split('.')[1]));
-          localStorage.setItem("username", payload["cognito:username"] || "ユーザー");
-          window.location.href = "index.html"; // パラメータ無しで再読み込み
+          // クエリ文字列を消して履歴を置き換え
+          window.history.replaceState({}, document.title, window.location.pathname);
+          // キャッシュされた /index.html をロード
+          window.location.reload();
         } else {
           document.getElementById("welcomeMessage").innerText = "ログインに失敗しました。";
         }
-      } catch (error) {
-        console.error("トークン取得エラー:", error);
+      } catch (err) {
+        console.error("トークン取得エラー:", err);
         document.getElementById("welcomeMessage").innerText = "トークン取得エラーが発生しました。";
       }
+    }
+
+    function showWelcome() {
+      const token = localStorage.getItem("idToken");
+      if (!token) {
+        // 未ログインなら login.htmlへ
+        window.location.href = "login.html";
+        return;
+      }
+      // トークンがあれば認証済み表示
+      let payload;
+      try {
+        payload = JSON.parse(atob(token.split('.')[1]));
+      } catch {
+        payload = {};
+      }
+      const username = payload["cognito:username"] || payload["email"] || "ユーザー";
+      document.getElementById("welcomeMessage").innerText = `${username} さん、こんにちは！`;
+      const btn = document.getElementById("logoutButton");
+      btn.style.display = "inline";
+      btn.addEventListener("click", () => {
+        localStorage.removeItem("idToken");
+        window.location.href = "login.html";
+      });
     }
 
     async function main() {
       if (code) {
         await exchangeCodeForToken(code);
-        return;
-      }
-
-      const token = localStorage.getItem("idToken");
-      const username = localStorage.getItem("username");
-
-      if (!token) {
-        window.location.href = "login.html";
       } else {
-        document.getElementById("welcomeMessage").innerText = `${username} さん、こんにちは！`;
+        showWelcome();
       }
     }
 
     main();
-
-    function logout() {
-      localStorage.removeItem("idToken");
-      localStorage.removeItem("username");
-      window.location.href = "login.html";
-    }
   </script>
 </body>
 </html>
