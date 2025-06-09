@@ -1,0 +1,29 @@
+{
+  "auth": {
+    "identityProviders": {
+      "customOpenIdConnectProviders": {
+        "cognito": {
+          "registration": {
+            "clientIdSettingName": "c5p5q2vphhcro2len18dm4guq",
+            "clientCredential": {
+              "clientSecretSettingName": "1c4gotgvsks54ujckjti6j5gs6dqrqukfj684i16a9ocvpv8aqao"
+            },
+            "openIdIssuer": "https://ap-northeast-1heoldjtvz.auth.ap-northeast-1.amazoncognito.com"
+          },
+          "login": {
+            "nameClaimType": "cognito:username",
+            "scopes": ["openid", "profile"]
+          }
+        }
+      }
+    }
+  }
+}
+"routes": [
+    {
+      "route": "/dashboard",
+      "allowedRoles": ["authenticated"],
+      "rewrite": "/index.html"
+    }
+  ]
+}
