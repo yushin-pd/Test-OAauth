@@ -3,51 +3,26 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ログイン</title>
 </head>
 <body>
-  <h1>ログイン</h1>
-  <form id="loginForm">
-    <input type="text" id="username" placeholder="ユーザー名" required><br>
-    <input type="password" id="password" placeholder="パスワード" required><br>
-    <button type="submit">ログイン</button>
-  </form>
-  <p id="message"></p>
+  <h1>ログインページ</h1>
+  <button id="loginButton">ログイン</button>
 
-  <script type="module">
-    import {
-      CognitoUserPool,
-      CognitoUser,
-      AuthenticationDetails
-    } from 'https://cdn.jsdelivr.net/npm/amazon-cognito-identity-js/+esm';
+  <script>
+    // CognitoのホストされたUIへのリダイレクトURL
+    const cognitoDomain = "<your_cognito_domain>";  // Cognitoドメイン
+    const region = "<your_region>";  // AWSリージョン（例: us-west-2）
+    const clientId = "<your_client_id>";  // CognitoアプリクライアントID
+    const redirectUri = "<your_redirect_uri>";  // ログイン後にリダイレクトされるURL
 
-    const poolData = {
-      UserPoolId: 'ap-northeast-1_HEoLDjtVz', 
-      ClientId: 'c5p5q2vphhcro2len18dm4guq'
-    };
+    // CognitoのホストUIへのリダイレクトリンクを作成
+    const loginUrl = `https://ap-northeast-1heoldjtvz.auth.ap-northeast-1.amazoncognito.com/login?response_type=code&client_id=${c5p5q2vphhcro2len18dm4guq}&redirect_uri=${https://brave-flower-0e0f8a700.6.azurestaticapps.neti}`;
 
-    const userPool = new CognitoUserPool(poolData);
-
-    document.getElementById('loginForm').addEventListener('submit', function (e) {
-      e.preventDefault();
-
-      const username = document.getElementById('username').value;
-      const password = document.getElementById('password').value;
-
-      const authDetails = new AuthenticationDetails({ Username: username, Password: password });
-      const user = new CognitoUser({ Username: username, Pool: userPool });
-
-      user.authenticateUser(authDetails, {
-        onSuccess: (result) => {
-          const idToken = result.getIdToken().getJwtToken();
-          localStorage.setItem("idToken", idToken);
-          localStorage.setItem("username", username);  // ユーザー名も保存
-          window.location.href = "index.html";
-        },
-        onFailure: (err) => {
-          document.getElementById('message').innerText = "ログイン失敗: " + err.message;
-        }
-      });
+    // ログインボタンがクリックされた時にCognitoのログインページにリダイレクト
+    document.getElementById('loginButton').addEventListener('click', () => {
+      window.location.href = loginUrl;
     });
   </script>
 </body>
