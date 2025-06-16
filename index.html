@@ -1,4 +1,3 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -10,15 +9,14 @@
   <h1>ようこそ</h1>
   <p id="welcomeMessage">認証確認中…</p>
   <button id="logoutButton" style="display:none;">ログアウト</button>
+  <button id="copilotBtn" style="display:none;">Copilot Studio を開く</button>
 
   <script>
-    // Cognito OIDC 情報
-    const cognitoDomain = "ap-northeast-1heoldjtvz"; // Cognitoドメインプレフィックス
+    const cognitoDomain = "ap-northeast-1heoldjtvz";
     const region = "ap-northeast-1";
-    const clientId = "1i0hpmdjda1mdm7ibq9cvj54cv"; // アプリクライアントID
-    const redirectUri = "https://brave-flower-0e0f8a700.6.azurestaticapps.net/index.html"; // /index.html
+    const clientId = "1i0hpmdjda1mdm7ibq9cvj54cv";
+    const redirectUri = "https://brave-flower-0e0f8a700.6.azurestaticapps.net/index.html";
 
-    // URL から code を取得
     const params = new URLSearchParams(window.location.search);
     const code = params.get("code");
 
@@ -40,9 +38,7 @@
         const data = await res.json();
         if (data.id_token) {
           localStorage.setItem("idToken", data.id_token);
-          // クエリ文字列を消して履歴を置き換え
           window.history.replaceState({}, document.title, window.location.pathname);
-          // キャッシュされた /index.html をロード
           window.location.reload();
         } else {
           document.getElementById("welcomeMessage").innerText = "ログインに失敗しました。";
@@ -56,11 +52,10 @@
     function showWelcome() {
       const token = localStorage.getItem("idToken");
       if (!token) {
-        // 未ログインなら login.htmlへ
         window.location.href = "login.html";
         return;
       }
-      // トークンがあれば認証済み表示
+
       let payload;
       try {
         payload = JSON.parse(atob(token.split('.')[1]));
@@ -69,15 +64,18 @@
       }
       const username = payload["cognito:username"] || payload["email"] || "ユーザー";
       document.getElementById("welcomeMessage").innerText = `${username} さん、こんにちは！`;
-      const btn = document.getElementById("logoutButton");
-      btn.style.display = "inline";
-      btn.addEventListener("click", () => {
+
+      const logoutBtn = document.getElementById("logoutButton");
+      logoutBtn.style.display = "inline";
+      logoutBtn.addEventListener("click", () => {
         localStorage.removeItem("idToken");
         window.location.href = "login.html";
       });
-     copilotBtn.addEventListener("click", () => {
-        // Copilot Studio を別ページで開く
-        window.location.href = https://copilotstudio.microsoft.com/environments/Default-9db27308-8c9a-45e7-be6f-29053f552bac/bots/Default_oauthTest/webchat?__version__=2;
+
+      const copilotBtn = document.getElementById("copilotBtn");
+      copilotBtn.style.display = "inline";
+      copilotBtn.addEventListener("click", () => {
+        window.location.href = "https://copilotstudio.microsoft.com/environments/Default-9db27308-8c9a-45e7-be6f-29053f552bac/bots/Default_oauthTest/webchat?__version__=2";
       });
     }
 
@@ -91,6 +89,5 @@
 
     main();
   </script>
-   
 </body>
-</html5
+</html>
